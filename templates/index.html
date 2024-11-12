@@ -137,6 +137,7 @@
             <div class="output" id="gas-output">
                 <div class="spinner" id="gas-spinner" style="display: none;"></div>
             </div>
+            <canvas id="gas-chart" style="display: none;"></canvas>
         </div>
 
         <!-- Водовоздушный Эжектор -->
@@ -277,5 +278,8 @@
         </div>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <!-- Добавьте перед закрывающимся тегом </body> -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </body>
 </html>

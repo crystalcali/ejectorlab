@@ -411,5 +411,7 @@ class CalcEjector:
                 "Длинна камеры смешения lk мм": lk* 1000,
                 "Длинна дифузора ld": ld* 1000,
                 "Диаметр диффузора в кнце dout мм²": dcd* 1000,
-                "Давление смешенного потока Pc Па": max_psa * self.Pi
+                "Давление смешенного потока Pc Па": max_psa * self.Pi,
+                "lambda_values": valid_lambda_values,
+                "psa_intersections": valid_psa_intersections
             }

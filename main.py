@@ -1,4 +1,4 @@
-# app.py
+# main.py
 from flask import Flask, render_template, request, jsonify
 from modules.gdac import CalcEjector
 from modules.waterair import WaterAirEjector

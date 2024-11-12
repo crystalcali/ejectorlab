@@ -1,0 +1,264 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejector Calculator</title>
+    <link rel="icon" href="../static/res/my_icon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <button class="theme-switcher" onclick="toggleTheme()">🌙</button>
+    <div class="container">
+        <h1>Ejector Calculator</h1>
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('gas')">Газоструйный эжектор</div>
+            <div class="tab" onclick="openTab('water_air')">Водовоздушный эжектор</div>
+        </div>
+
+        <!-- Газоструйный Эжектор -->
+        <div id="gas" class="tab-content active">
+            <div class="image-container">
+                <img id="gasImage" src="../static/res/draw_gas_ejector.png" alt="Gas Ejector Draw svg" class="responsive-image">
+            </div>
+            <form id="gas-form">
+                <div class="form-group">
+                    <label for="Gr">Массовый расход r (Gr):</label>
+                    <div class="input-group">
+                        <input type="number" id="Gr" name="Gr" value="0.0167" step="0.0001">
+                        <select id="Gr_unit" name="Gr_unit">
+                            <option value="кг/с">кг/с</option>
+                            <option value="кг/ч">кг/ч</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Повторите для остальных полей с input и select -->
+                <div class="form-group">
+                    <label for="Gi">Массовый расход i (Gi):</label>
+                    <div class="input-group">
+                        <input type="number" id="Gi" name="Gi" value="0.00464" step="0.0001">
+                        <select id="Gi_unit" name="Gi_unit">
+                            <option value="кг/с">кг/с</option>
+                            <option value="кг/ч">кг/ч</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Pr">Давление r (Pr):</label>
+                    <div class="input-group">
+                        <input type="number" id="Pr" name="Pr" value="11500000" step="0.0001">
+                        <select id="Pr_unit" name="Pr_unit">
+                            <option value="Па">Па</option>
+                            <option value="МПа">МПа</option>
+                            <option value="атм">атм</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Pi">Давление i (Pi):</label>
+                    <div class="input-group">
+                        <input type="number" id="Pi" name="Pi" value="3800000" step="0.0001">
+                        <select id="Pi_unit" name="Pi_unit">
+                            <option value="Па">Па</option>
+                            <option value="МПа">МПа</option>
+                            <option value="атм">атм</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Tr">Температура r (Tr):</label>
+                    <div class="input-group">
+                        <input type="number" id="Tr" name="Tr" value="468" step="0.1">
+                        <select id="Tr_unit" name="Tr_unit">
+                            <option value="K">K</option>
+                            <option value="C">C</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Ti">Температура i (Ti):</label>
+                    <div class="input-group">
+                        <input type="number" id="Ti" name="Ti" value="483" step="0.1">
+                        <select id="Ti_unit" name="Ti_unit">
+                            <option value="K">K</option>
+                            <option value="C">C</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Rr">Газовая постоянная для r (Rr):</label>
+                    <input type="number" id="Rr" name="Rr" value="287" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="Ri">Газовая постоянная для i (Ri):</label>
+                    <input type="number" id="Ri" name="Ri" value="461" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="kr">k для r (kr):</label>
+                    <input type="number" id="kr" name="kr" value="1.4" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="ki">k для i (ki):</label>
+                    <input type="number" id="ki" name="ki" value="1.4" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="state_model_r">Модель состояния рабочего потока (r):</label>
+                    <select id="state_model_r" name="state_model_r">
+                        <option value="ideal gas">ideal gas</option>
+                        <option value="peng robinson">peng robinson</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="state_model_i">Модель состояния инжектируемого потока (i):</label>
+                    <select id="state_model_i" name="state_model_i">
+                        <option value="ideal gas">ideal gas</option>
+                        <option value="peng robinson">peng robinson</option>
+                    </select>
+                </div>
+                <button type="submit" class="button">Рассчитать</button>
+            </form>
+            <div class="output" id="gas-output">
+                <div class="spinner" id="gas-spinner" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Водовоздушный Эжектор -->
+        <div id="water_air" class="tab-content">
+            <form id="water-air-form">
+                <div class="form-group">
+                    <label for="G_air">Массовый расход воздуха (G_air):</label>
+                    <div class="input-group"></div>
+                    <input type="number" id="G_air" name="G_air" value="0.5" step="0.01">
+                    <select id="G_air_unit" name="G_air_unit">
+                        <option value="кг/ч">кг/ч</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="P_water">Давление воды (P_water):</label>
+                    <input type="number" id="P_water" name="P_water" value="200" step="1">
+                    <select id="P_water_unit" name="P_water_unit">
+                        <option value="кПа">кПа</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="P_air">Давление воздуха (P_air):</label>
+                    <input type="number" id="P_air" name="P_air" value="100" step="1">
+                    <select id="P_air_unit" name="P_air_unit">
+                        <option value="кПа">кПа</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="T_water">Температура воды (T_water):</label>
+                    <input type="number" id="T_water" name="T_water" value="20" step="0.1">
+                    <select id="T_water_unit" name="T_water_unit">
+                        <option value="C">C</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="T_air">Температура воздуха (T_air):</label>
+                    <input type="number" id="T_air" name="T_air" value="25" step="0.1">
+                    <select id="T_air_unit" name="T_air_unit">
+                        <option value="C">C</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="choice">Выберите параметр:</label>
+                    <select id="choice" name="choice" onchange="toggleChoiceFields()">
+                        <option value="Выберите параметр">Выберите параметр</option>
+                        <option value="uo">uo</option>
+                        <option value="Pc">Pc</option>
+                    </select>
+                </div>
+                <div class="form-group" id="uo-group" style="display:none;">
+                    <label for="uo">uo:</label>
+                    <input type="number" id="uo" name="uo" step="0.01">
+                </div>
+                <div class="form-group" id="Pc-group" style="display:none;">
+                    <label for="Pc">Pc:</label>
+                    <input type="number" id="Pc" name="Pc" step="1">
+                </div>
+                <button type="submit" class="button">Рассчитать</button>
+            </form>
+            <div class="output" id="water-air-output">
+                <div class="spinner" id="gas-spinner" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Документация -->
+        <div class="documentation">
+            <h2>Документация</h2>
+            <p>Добро пожаловать в <strong>Ejector Calculator</strong> – приложение для расчета параметров эжекторов. Это инструмент предназначен для инженеров и специалистов, работающих с газоструйными и водовоздушными эжекторами, позволяющий быстро и точно вычислять необходимые характеристики для проектирования и анализа систем.</p>
+            
+            <h3>Основные возможности</h3>
+            <ul>
+                <li>Расчет параметров газоструйных и водовоздушных эжекторов</li>
+                <li>Выбор модели состояния рабочего и инжектируемого потока</li>
+                <li>Ввод пользовательских параметров веществ</li>
+                <li>Автоматическая конвертация единиц измерения</li>
+                <li>Отображение результатов расчета в текстовом виде и на графике</li>
+            </ul>
+            
+            <h3>Структура приложения</h3>
+            <p>Приложение состоит из двух вкладок:</p>
+            <ul>
+                <li><strong>Газоструйный эжектор</strong> – для расчета параметров эжекторов, работающих с газовыми потоками.</li>
+                <li><strong>Водовоздушный эжектор</strong> – для расчета параметров эжекторов, работающих с водно-воздушными потоками.</li>
+            </ul>
+            
+            <h3>Как пользоваться калькулятором</h3>
+            
+            <h4>1. Выбор типа эжектора</h4>
+            <p>На верхней панели приложения выберите вкладку, соответствующую типу эжектора, который вы хотите рассчитать:</p>
+            <ul>
+                <li><strong>Газоструйный эжектор</strong></li>
+                <li><strong>Водовоздушный эжектор</strong></li>
+            </ul>
+            
+            <h4>2. Ввод исходных данных</h4>
+            <p>В каждой вкладке представлены поля для ввода необходимых параметров. Ниже приведено описание основных полей:</p>
+            
+            <h5>Общие поля:</h5>
+            <ul>
+                <li><strong>Температура</strong> (Tr, Ti): Введите температуру рабочего (r) и инжектируемого (i) потоков. Выберите единицы измерения (Кельвины или Цельсии).</li>
+                <li><strong>Давление</strong> (Pr, Pi): Введите давление рабочего (r) и инжектируемого (i) потоков. Выберите единицы измерения (Па, МПа, атм).</li>
+                <li><strong>Массовый расход</strong> (Gr, Gi): Введите массовый расход рабочего (r) и инжектируемого (i) потоков. Выберите единицы измерения (кг/с, кг/ч).</li>
+            </ul>
+            
+            <h5>Специфические поля для Газоструйного эжектора:</h5>
+            <ul>
+                <li><strong>Модель состояния рабочего потока (r)</strong>: Выберите модель состояния рабочего потока (идеальный газ или Peng-Robinson).</li>
+                <li><strong>Модель состояния инжектируемого потока (i)</strong>: Выберите модель состояния инжектируемого потока.</li>
+                <li><strong>Вещество рабочего потока (r)</strong>: Выберите вещество рабочего потока из списка или укажите собственные параметры (коэффициент адиабаты k и универсальная газовая постоянная R).</li>
+                <li><strong>Вещество инжектируемого потока (i)</strong>: Выберите вещество инжектируемого потока из списка или укажите собственные параметры.</li>
+            </ul>
+            
+            <h5>Специфические поля для Водовоздушного эжектора:</h5>
+            <ul>
+                <li><strong>Массовый расход воздуха (G_air)</strong>: Введите массовый расход воздуха и выберите единицы измерения.</li>
+                <li><strong>Давление воды (P_water)</strong>: Введите давление воды и выберите единицы измерения.</li>
+                <li><strong>Давление воздуха (P_air)</strong>: Введите давление воздуха и выберите единицы измерения.</li>
+                <li><strong>Температура воды (T_water)</strong>: Введите температуру воды и выберите единицы измерения.</li>
+                <li><strong>Температура воздуха (T_air)</strong>: Введите температуру воздуха и выберите единицы измерения.</li>
+                <li><strong>Выбор параметра</strong>: Выберите дополнительный параметр для расчета (uo или Pc). В зависимости от выбора появятся соответствующие поля для ввода.</li>
+            </ul>
+            
+            <h4>3. Выполнение расчета</h4>
+            <p>После ввода всех необходимых данных нажмите кнопку <strong>"Рассчитать"</strong>. Приложение выполнит расчеты и отобразит результаты в текстовом поле, а также построит график зависимости пересечения давления от лямбда.</p>
+            
+        </div>
+        <!-- Информация о разработчике -->
+        <div class="developer-info">
+            <h2>Разработчик</h2>
+            <p>Магистрант МФТИ Бабаев Эмир Мамурович, Кафедра фундаментальных основ газового дела.</p>
+        </div>
+    </div>
+
+    <div class="spinner-overlay" id="global-spinner" style="display: none;">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <p>Идет расчет...</p>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

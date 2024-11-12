@@ -1,5 +1,5 @@
 // static/script.js
-
+const excludeKeys = ["lambda_values", "psa_intersections"];
 // Функция для открытия вкладок
 function openTab(tabName, event) {
     // Скрыть все вкладки
@@ -167,57 +167,59 @@ document.getElementById('gas-form').addEventListener('submit', function(e) {
         if(data.status === 'success') {
             let output = '';
             for (const [key, value] of Object.entries(data.results)) {
-                output += `<p><strong>${key}:</strong> ${value}</p>`;
+                if (!excludeKeys.includes(key)) { // Проверяем, не находится ли ключ в списке исключений
+                    output += `<p><strong>${key}:</strong> ${value}</p>`;
+                }
             }
             document.getElementById('gas-output').innerHTML = output;
-            // Проверка наличия данных для графика
-            if(data.results.lambda_values && data.results.psa_intersections) {
-                const lambda = data.results.lambda_values;
-                const psa = data.results.psa_intersections;
-
-                // Отображение Canvas
-                const chartCanvas = document.getElementById('gas-chart');
-                chartCanvas.style.display = 'block';
-
-                // Если график уже существует, уничтожить его перед созданием нового
-                if(gasChart) {
-                    gasChart.destroy();
-                }
-
-                // Создание нового графика
-                const ctx = chartCanvas.getContext('2d');
-                gasChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: lambda,
-                        datasets: [{
-                            label: 'Cтепень сжатия Pc/Pi',
-                            data: psa,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            fill: false,
-                            tension: 0.1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'относительная скорость'
-                                }
-                            },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Cтепень сжатия Pc/Pi'
-                                }
+                        // Проверка наличия данных для графика
+                        if(data.results.lambda_values && data.results.psa_intersections) {
+                            const lambda = data.results.lambda_values;
+                            const psa = data.results.psa_intersections;
+            
+                            // Отображение Canvas
+                            const chartCanvas = document.getElementById('gas-chart');
+                            chartCanvas.style.display = 'block';
+            
+                            // Если график уже существует, уничтожить его перед созданием нового
+                            if(gasChart) {
+                                gasChart.destroy();
                             }
+            
+                            // Создание нового графика
+                            const ctx = chartCanvas.getContext('2d');
+                            gasChart = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: lambda,
+                                    datasets: [{
+                                        label: 'Cтепень сжатия Pc/Pi',
+                                        data: psa,
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                        fill: false,
+                                        tension: 0.1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Относительная скорость λ'
+                                            }
+                                        },
+                                        y: {
+                                            title: {
+                                                display: true,
+                                                text: 'Cтепень сжатия Pc/Pi'
+                                            }
+                                        }
+                                    }
+                                }
+                            });
                         }
-                    }
-                });
-            }
         } else {
             document.getElementById('gas-output').innerHTML = `<p style="color:red;">Ошибка: ${data.message}</p>`;
         }
